@@ -17,6 +17,8 @@ use Illuminate\Http\RedirectResponse;
 //import Facades Storage
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Support\Str;
+
 class ProductController extends Controller
 {
     /**
@@ -49,32 +51,69 @@ class ProductController extends Controller
      * @param  mixed $request
      * @return RedirectResponse
      */
+    // public function store(Request $request): RedirectResponse
+    // {
+    //     //validate form
+    //     $request->validate([
+    //         'image'         => 'required|image|mimes:jpeg,jpg,png|max:2048',
+    //         'title'         => 'required|min:5',
+    //         'description'   => 'required|min:10',
+    //         'price'         => 'required|numeric',
+    //         'stock'         => 'required|numeric'
+    //     ]);
+
+    //     //upload image
+    //     $image = $request->file('image');
+    //     $image->storeAs('public/products', $image->hashName());
+
+    //     //create product
+    //     Product::create([
+    //         'image'         => $image->hashName(),
+    //         'title'         => $request->title,
+    //         'description'   => $request->description,
+    //         'price'         => $request->price,
+    //         'stock'         => $request->stock
+    //     ]);
+
+    //     //redirect to index
+    //     return redirect()->route('products.index')->with(['success' => 'Data Berhasil Disimpan!']);
+    // }
+
     public function store(Request $request): RedirectResponse
     {
-        //validate form
+        // Validasi form input
         $request->validate([
-            'image'         => 'required|image|mimes:jpeg,jpg,png|max:2048',
-            'title'         => 'required|min:5',
-            'description'   => 'required|min:10',
-            'price'         => 'required|numeric',
-            'stock'         => 'required|numeric'
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'document' => 'required|mimes:pdf,doc,docx|max:2048',  // validasi untuk dokumen
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
         ]);
 
-        //upload image
+        // Menangani upload file gambar
         $image = $request->file('image');
         $image->storeAs('public/products', $image->hashName());
 
-        //create product
-        Product::create([
-            'image'         => $image->hashName(),
-            'title'         => $request->title,
-            'description'   => $request->description,
-            'price'         => $request->price,
-            'stock'         => $request->stock
-        ]);
+        // Menangani upload file dokumen
+        if ($request->hasFile('document')) {
+            $document = $request->file('document');
+            $documentName = Str::uuid()->toString() . '.' . $document->getClientOriginalExtension();
+            $documentPath = $document->storeAs('products/documents', $documentName, 'public');
+        }
 
-        //redirect to index
-        return redirect()->route('products.index')->with(['success' => 'Data Berhasil Disimpan!']);
+        // Menyimpan data produk ke database
+        $product = new Product();
+        $product->image = $image->hashName();  // simpan path gambar
+        $product->document = $documentName;  // simpan path dokumen
+        $product->title = $request->title;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->stock = $request->stock;
+        $product->save();
+
+        // Redirect atau response setelah menyimpan
+        return redirect()->route('products.index')->with('success', 'Product berhasil ditambahkan');
     }
     
     /**
@@ -114,53 +153,110 @@ class ProductController extends Controller
      * @param  mixed $id
      * @return RedirectResponse
      */
+    // public function update(Request $request, $id): RedirectResponse
+    // {
+    //     //validate form
+    //     $request->validate([
+    //         'image'         => 'image|mimes:jpeg,jpg,png|max:2048',
+    //         'title'         => 'required|min:5',
+    //         'description'   => 'required|min:10',
+    //         'price'         => 'required|numeric',
+    //         'stock'         => 'required|numeric'
+    //     ]);
+
+    //     //get product by ID
+    //     $product = Product::findOrFail($id);
+
+    //     //check if image is uploaded
+    //     if ($request->hasFile('image')) {
+
+    //         //upload new image
+    //         $image = $request->file('image');
+    //         $image->storeAs('public/products', $image->hashName());
+
+    //         //delete old image
+    //         Storage::delete('public/products/'.$product->image);
+
+    //         //update product with new image
+    //         $product->update([
+    //             'image'         => $image->hashName(),
+    //             'title'         => $request->title,
+    //             'description'   => $request->description,
+    //             'price'         => $request->price,
+    //             'stock'         => $request->stock
+    //         ]);
+
+    //     } else {
+
+    //         //update product without image
+    //         $product->update([
+    //             'title'         => $request->title,
+    //             'description'   => $request->description,
+    //             'price'         => $request->price,
+    //             'stock'         => $request->stock
+    //         ]);
+    //     }
+
+    //     //redirect to index
+    //     return redirect()->route('products.index')->with(['success' => 'Data Berhasil Diubah!']);
+    // }
+
     public function update(Request $request, $id): RedirectResponse
     {
-        //validate form
+        // Validasi form input
         $request->validate([
             'image'         => 'image|mimes:jpeg,jpg,png|max:2048',
+            'document'      => 'mimes:pdf,doc,docx|max:2048',  // Validasi dokumen
             'title'         => 'required|min:5',
             'description'   => 'required|min:10',
             'price'         => 'required|numeric',
             'stock'         => 'required|numeric'
         ]);
 
-        //get product by ID
+        // Dapatkan produk berdasarkan ID
         $product = Product::findOrFail($id);
 
-        //check if image is uploaded
+        // Proses upload gambar
         if ($request->hasFile('image')) {
-
-            //upload new image
+            // Upload gambar baru
             $image = $request->file('image');
-            $image->storeAs('public/products', $image->hashName());
+            $imageName = $image->hashName();
+            $image->storeAs('public/products', $imageName);
 
-            //delete old image
+            // Hapus gambar lama
             Storage::delete('public/products/'.$product->image);
 
-            //update product with new image
-            $product->update([
-                'image'         => $image->hashName(),
-                'title'         => $request->title,
-                'description'   => $request->description,
-                'price'         => $request->price,
-                'stock'         => $request->stock
-            ]);
-
-        } else {
-
-            //update product without image
-            $product->update([
-                'title'         => $request->title,
-                'description'   => $request->description,
-                'price'         => $request->price,
-                'stock'         => $request->stock
-            ]);
+            // Update produk dengan gambar baru
+            $product->image = $imageName;
         }
 
-        //redirect to index
+        // Proses upload dokumen
+        if ($request->hasFile('document')) {
+            // Upload dokumen baru
+            $document = $request->file('document');
+            $documentName = Str::uuid()->toString() . '.' . $document->getClientOriginalExtension();
+            $document->storeAs('public/products/documents', $documentName);
+
+            // Hapus dokumen lama jika ada
+            if ($product->document) {
+                Storage::delete('public/products/documents/'.$product->document);
+            }
+
+            // Update produk dengan dokumen baru
+            $product->document = $documentName;
+        }
+
+        // Update produk dengan data lain
+        $product->title = $request->title;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->stock = $request->stock;
+        $product->save();
+
+        // Redirect ke index
         return redirect()->route('products.index')->with(['success' => 'Data Berhasil Diubah!']);
     }
+
     
     /**
      * destroy
@@ -175,6 +271,7 @@ class ProductController extends Controller
 
         //delete image
         Storage::delete('public/products/'. $product->image);
+        Storage::delete('public/products/documents'. $product->document);
 
         //delete product
         $product->delete();

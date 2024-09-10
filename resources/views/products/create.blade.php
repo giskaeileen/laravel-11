@@ -81,6 +81,17 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold">DOCUMENT</label>
+                                    <input type="file" class="form-control @error('document') is-invalid @enderror" name="document">
+                                    
+                                    <!-- error message untuk document -->
+                                    @error('document')
+                                        <div class="alert alert-danger mt-2">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-md btn-primary me-3">SAVE</button>

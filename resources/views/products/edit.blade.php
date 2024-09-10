@@ -82,6 +82,24 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="form-group mb-3">
+                                    <label class="font-weight-bold">DOCUMENT</label>
+                                    <input type="file" class="form-control @error('document') is-invalid @enderror" name="document">
+                                    
+                                    <!-- Menampilkan nama dokumen saat ini jika ada -->
+                                    @if($product->document)
+                                        <p>Current Document: {{ $product->document }}</p>
+                                    @else
+                                        <p>No document uploaded.</p>
+                                    @endif
+
+                                    <!-- error message untuk document -->
+                                    @error('document')
+                                        <div class="alert alert-danger mt-2">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
+                                </div>
                             </div>
 
                             <button type="submit" class="btn btn-md btn-primary me-3">UPDATE</button>
