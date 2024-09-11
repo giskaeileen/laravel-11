@@ -12,7 +12,7 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.login');
+        return view ('auth.login');
     }
 
     // public function main()
@@ -45,22 +45,33 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         // Validasi input
-        $request->validate([
+        $data = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // Cek kredensial
         if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
             $request->session()->regenerate();
 
             // Redirect berdasarkan role
-            if (Auth::user()->role === 'admin') {
-                return redirect()->intended('/products'); // Admin redirect ke halaman produk
-            } else {
-                return redirect()->intended('/user'); // User redirect ke halaman produk (view only)
+            if (Auth::attempt($data)) {
+                $request->session()->regenerate();
+            
+                return redirect()->intended('/products'); // User redirect ke halaman produk (view only)
             }
         }
+
+        // Cek kredensial
+        // if (Auth::attempt($request->only('email', 'password'), $request->filled('remember'))) {
+        //     $request->session()->regenerate();
+
+        //     // Redirect berdasarkan role
+        //     if (Auth::user()->role === 'admin') {
+        //         return redirect()->intended('/products'); // Admin redirect ke halaman produk
+        //     } else {
+        //         return redirect()->intended('/user'); // User redirect ke halaman produk (view only)
+        //     }
+        // }
 
         // Jika login gagal
         throw ValidationException::withMessages([

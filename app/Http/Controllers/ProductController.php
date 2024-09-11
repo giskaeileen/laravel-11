@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 //import model product
 use App\Models\Product; 
 
+use App\Models\User;
+
 //import return type View
 use Illuminate\View\View;
 
@@ -16,6 +18,8 @@ use Illuminate\Http\RedirectResponse;
 
 //import Facades Storage
 use Illuminate\Support\Facades\Storage;
+
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Support\Str;
 
@@ -30,9 +34,11 @@ class ProductController extends Controller
     {
         //get all products
         $products = Product::latest()->paginate(10);
+        $role = Auth::user()->role;
 
         //render view with products
-        return view('products.index', compact('products'));
+        // return view('products.index', compact('products'));
+        return view('products.index', compact('products', 'role'));
     }
 
     /**
@@ -42,6 +48,10 @@ class ProductController extends Controller
      */
     public function create(): View
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('products.create');
     }
 
@@ -81,6 +91,10 @@ class ProductController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
         // Validasi form input
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -139,6 +153,10 @@ class ProductController extends Controller
      */
     public function edit(string $id): View
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
         //get product by ID
         $product = Product::findOrFail($id);
 
@@ -203,6 +221,9 @@ class ProductController extends Controller
 
     public function update(Request $request, $id): RedirectResponse
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
         // Validasi form input
         $request->validate([
             'image'         => 'image|mimes:jpeg,jpg,png|max:2048',
@@ -266,6 +287,9 @@ class ProductController extends Controller
      */
     public function destroy($id): RedirectResponse
     {
+        if (Auth::user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
         //get product by ID
         $product = Product::findOrFail($id);
 
