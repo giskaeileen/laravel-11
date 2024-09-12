@@ -26,6 +26,7 @@ Route::middleware(['auth', 'checkRole'])->group(function () {
     Route::get('/products/{product}/edit', [\App\Http\Controllers\ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}', [\App\Http\Controllers\ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('products.destroy');
+    Route::get('/products-data', [\App\Http\Controllers\ProductController::class, 'getProductsData'])->name('products.data');
   });
 
 // Route::middleware('auth')->group(function () {

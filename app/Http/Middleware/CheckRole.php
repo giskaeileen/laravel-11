@@ -25,7 +25,7 @@ class CheckRole
         $route = $request->route()->getName();
 
         if ($user->role === 'user') {
-            if (in_array($route, ['products.index', 'products.show'])) {
+            if (in_array($route, ['products.index', 'products.show', 'products.data'])) {
                 return $next($request);
             }
 

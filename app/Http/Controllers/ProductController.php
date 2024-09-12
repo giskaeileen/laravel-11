@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 //import model product
 use App\Models\Product; 
 
+use Yajra\DataTables\Facades\DataTables;
+
 use App\Models\User;
 
 //import return type View
@@ -303,4 +305,43 @@ class ProductController extends Controller
         //redirect to index
         return redirect()->route('products.index')->with(['success' => 'Data Berhasil Dihapus!']);
     }
+
+    public function getProductsData()
+    {
+        // kalo milih2
+        // $products = Product::select('id', 'title', 'description', 'price', 'stock', 'file')->get();
+
+        //kalo butuh semua data tanpa milih
+        $products = Product::all();
+
+        $role = Auth::user()->role;
+
+        return DataTables::of($products)
+            ->addColumn('image', function($row) {
+                return '<img src="' . asset('/storage/products/' . $row->image) . '" style="width: 100px; height: auto;">';
+            })
+
+            ->editColumn('price', function($product) {
+                return 'Rp. ' . number_format($product->price, 2, ',', '.'); // Format harga dengan prefix
+            })    
+
+            ->addColumn('actions', function($row) use($role) {
+                if ($role === 'admin') {
+                    return '<a href="' . route('products.show', $row->id) . '" class="btn btn-sm btn-dark">Show</a>
+                    <a href="' . route('products.edit', $row->id) . '" class="btn btn-success btn-sm">Edit</a>
+                    <form action="' . route('products.destroy', $row->id) . '" method="POST" style="display:inline;">
+                        ' . csrf_field() . method_field('DELETE') . '
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>';
+                }
+
+                return '<a href="' . route('products.show', $row->id) . '" class="btn btn-sm btn-dark">Show</a>';
+                // <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-dark">SHOW</a>
+            })
+            ->rawColumns(['image','description','actions'])
+            ->make(true);
+
+    }
+
+
 }
