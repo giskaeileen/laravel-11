@@ -15,29 +15,22 @@
                         <h3 class="mb-0">Login</h3>
                     </div>
                     <div class="card-body p-4">
-                        <form method="POST" action="{{ route('login.post') }}">
+                        <!-- Login Form -->
+                        <form method="POST" id="loginForm">
                             @csrf
 
                             <!-- Email Address -->
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email Address</label>
                                 <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required autofocus>
-                                @error('email')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                                <div id="emailError" class="invalid-feedback"></div>
                             </div>
 
                             <!-- Password -->
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <input type="password" name="password" id="password" class="form-control @error('password') is-invalid @enderror" required>
-                                @error('password')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                @enderror
+                                <div id="passwordError" class="invalid-feedback"></div>
                             </div>
 
                             <!-- Remember Me -->
@@ -48,6 +41,9 @@
 
                             <!-- Submit Button -->
                             <button type="submit" class="btn btn-primary w-100">Login</button>
+
+                            <!-- Error Message -->
+                            <div id="loginError" class="text-danger mt-3" style="display:none;"></div>
                         </form>
                     </div>
                 </div>
@@ -57,5 +53,123 @@
 
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript for handling form submission -->
+    <!-- <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Mencegah refresh halaman saat form disubmit
+
+            // Ambil data dari form
+            const formData = new FormData(this);
+
+            try {
+                // Kirim request login ke API
+                const response = await fetch('{{ route('login.post') }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                    },
+                    // body: JSON.string5ify({email, password})
+                    body: formData
+                });
+
+                // Ambil respons JSON dari server
+                const data = await response.json();
+                // console.log('Response Data:', data)
+
+                // Jika login berhasil, redirect ke route product.post
+                if (response.ok) {
+                    // Simpan token JWT di localStorage atau sessionStorage jika diperlukan
+                    localStorage.setItem('token', data.token);
+                    console.log('Token:', data.token);
+
+                    // Redirect ke halaman produk
+                    window.location.href = "{{ route('products.index') }}";
+                    // window.location.href = '/products';
+                } else {
+                    // Tampilkan error jika login gagal
+                    alert(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Something went wrong. Please try again.');
+            }
+        });
+    </script> -->
+
+    <!-- <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json', 
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+                console.log('Response Data:', data);
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+
+                    sessionStorage.setItem('email', data.user.email);
+
+                    window.location.href = "{{ route('products.index') }}";
+                } else {
+                    console.error('Error:', data.message);
+                }
+            } catch (error) {
+                console.error('Login failed:', error);
+            }
+        });
+    </script> -->
+
+    <script>
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json', 
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+            console.log('Response Data:', data);
+
+            if (response.ok) {
+                // localStorage.setItem('access_token', data.access_token);
+                // localStorage.setItem('refresh_token', data.refresh_token);
+                localStorage.setItem('token', data.token);
+                
+                sessionStorage.setItem('email', data.user.email);
+                sessionStorage.setItem('role', data.user.role);
+
+                window.location.href = "{{ route('products.index') }}";
+            } else {
+                console.error('Error:', data.message);
+            }
+        } catch (error) {
+            console.error('Login failed:', error);
+        }
+    });
+  </script>
+
 </body>
 </html>

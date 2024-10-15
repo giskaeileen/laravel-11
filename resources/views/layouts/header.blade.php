@@ -216,15 +216,10 @@
                                     Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                @auth
-                                <a class="dropdown-item" href="{{ route('logout') }}" data-toggle="modal" data-target="#logoutModal"  onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <a class="dropdown-item" id="logoutButton" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-                                @endauth
                             </div>
                         </li>
 
@@ -232,3 +227,60 @@
 
                 </nav>
                 <!-- End of Topbar -->
+
+    <!-- <script>
+        document.getElementById('logoutButton').addEventListener('click', async function() {
+            const token = localStorage.getItem('token');
+            // const email = sessionStorage.getItem('email');
+            // console.log(token)
+            // console.log(email)
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/logout-api', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    localStorage.removeItem('token');
+                    sessionStorage.removeItem('email');
+                    window.location.href = "{{ route('login') }}"; // Ganti dengan rute login yang sesuai
+                } else {
+                    console.error('Logout failed:', await response.json());
+                }
+            } catch (error) {
+                console.error('Logout request failed:', error);
+            }
+        });
+    </script> -->
+
+    <script>
+        document.getElementById('logoutButton').addEventListener('click', async function() {
+        const token = localStorage.getItem('token');
+        // const email = sessionStorage.getItem('email');
+
+        // console.log(token)
+        // console.log(email)
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/logout-api', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                localStorage.removeItem('token');
+                sessionStorage.removeItem('email');
+                window.location.href = "{{ route('login') }}"; // Ganti dengan rute login yang sesuai
+            } else {
+                console.error('Logout failed:', await response.json());
+            }
+        } catch (error) {
+            console.error('Logout request failed:', error);
+        }
+        });
+    </script>
