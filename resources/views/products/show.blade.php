@@ -1,21 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Show Products - SantriKoding.com</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body style="background: lightgray">
+@extends('layouts.app')
 
-    <div class="container mt-5 mb-5">
+@section('title', 'Products')
+
+@section('content')
+
+    <div class="container-fluid mt-5 mb-5">
         <div class="row">
             <div class="col-md-4">
                 <div class="card border-0 shadow-sm rounded">
                     <div class="card-body">
                         <img id="product-image" class="rounded" style="width: 100%">
-                        {{-- src="{{ asset('/storage/products/'.$product->image) }}" --}}
                     </div>
                 </div>
             </div>
@@ -36,7 +30,11 @@
         </div>
     </div>
 
+@endsection
+
+@push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         async function refreshToken() {
             const token = localStorage.getItem('token');
@@ -118,5 +116,5 @@
         document.addEventListener('DOMContentLoaded', getData)
 
     </script>
-</body>
-</html>
+
+@endpush

@@ -133,43 +133,93 @@
         });
     </script> -->
 
-    <script>
-    document.getElementById('loginForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
+    <!-- <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
 
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json', 
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json', 
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
 
-            const data = await response.json();
-            console.log('Response Data:', data);
+                const data = await response.json();
+                console.log('Response Data:', data);
 
-            if (response.ok) {
-                // localStorage.setItem('access_token', data.access_token);
-                // localStorage.setItem('refresh_token', data.refresh_token);
-                localStorage.setItem('token', data.token);
-                
-                sessionStorage.setItem('email', data.user.email);
-                sessionStorage.setItem('role', data.user.role);
+                if (response.ok) {
+                    // localStorage.setItem('access_token', data.access_token);
+                    // localStorage.setItem('refresh_token', data.refresh_token);
+                    localStorage.setItem('token', data.token);
+                    
+                    sessionStorage.setItem('email', data.user.email);
+                    sessionStorage.setItem('role', data.user.role);
 
-                window.location.href = "{{ route('products.index') }}";
-            } else {
-                console.error('Error:', data.message);
+                    window.location.href = "{{ route('products.index') }}";
+                } else {
+                    console.error('Error:', data.message);
+                }
+            } catch (error) {
+                console.error('Login failed:', error);
             }
-        } catch (error) {
-            console.error('Login failed:', error);
-        }
-    });
-  </script>
+        });
+    </script> -->
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            // Ambil referensi ke tombol login
+            const loginButton = document.querySelector('button[type="submit"]');
+
+            // Ubah status tombol menjadi tidak bisa dipencet dan ubah teksnya menjadi "Loading..."
+            loginButton.disabled = true;
+            loginButton.innerHTML = 'Loading...';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json', 
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+                console.log('Response Data:', data);
+
+                if (response.ok) {
+                    // Simpan token dan redirect
+                    localStorage.setItem('token', data.token);
+                    sessionStorage.setItem('email', data.user.email);
+                    sessionStorage.setItem('role', data.user.role);
+
+                    window.location.href = "{{ route('products.index') }}";
+                } else {
+                    // Jika terjadi kesalahan, tampilkan error dan aktifkan kembali tombol login
+                    console.error('Error:', data.message);
+                    loginButton.disabled = false;
+                    loginButton.innerHTML = 'Login';
+                }
+            } catch (error) {
+                // Jika ada error dalam proses fetch, tampilkan error dan aktifkan kembali tombol
+                console.error('Login failed:', error);
+                loginButton.disabled = false;
+                loginButton.innerHTML = 'Login';
+            }
+        });
+    </script>
+
 
 </body>
 </html>

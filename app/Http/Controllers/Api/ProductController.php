@@ -47,37 +47,184 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function getProductsData()
-    {
-        // kalo milih2
-        $products = Product::select('id', 'title', 'description', 'price', 'stock', 'file')->get();
-        //kalo butuh semua data tanpa milih
-        $products = Product::all();
-        $role = Auth::guard('api')->user()->role;
-        return DataTables::of($products)
-            ->addColumn('image', function($row) {
-                return '<img src="' . asset('/storage/products/' . $row->image) . '" style="width: 100px; height: auto;">';
-            })
+    // public function getProductsData()
+    // {
+    //     // kalo milih2
+    //     $products = Product::select('id', 'title', 'description', 'price', 'stock', 'file')->get();
+    //     //kalo butuh semua data tanpa milih
+    //     $products = Product::all();
+    //     $role = Auth::guard('api')->user()->role;
+    //     return DataTables::of($products)
+    //         ->addColumn('image', function($row) {
+    //             return '<img src="' . asset('/storage/products/' . $row->image) . '" style="width: 100px; height: auto;">';
+    //         })
 
-            ->editColumn('price', function($product) {
-                return 'Rp. ' . number_format($product->price, 2, ',', '.'); // Format harga dengan prefix
-            })   
+    //         ->editColumn('price', function($product) {
+    //             return 'Rp. ' . number_format($product->price, 2, ',', '.'); // Format harga dengan prefix
+    //         })   
             
-            ->addColumn('actions', function($row) use($role) {
-                if ($role === 'admin') {
-                    return '<a href="' . route('products.show', $row->id) . '" class="btn btn-sm btn-secondary">Show</a>
-                    <a href="' . route('products.edit', $row->id) . '" class="btn btn-success btn-sm">Edit</a>
-                    <form action="' . route('products.destroy', $row->id) . '" method="POST" style="display:inline;">
-                        ' . csrf_field() . method_field('DELETE') . '
-                        <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $row->id .'">Delete</button>
-                    </form>';
-                }
-                return '<a href="' . route('products.show', $row->id) . '" class="btn btn-sm btn-dark">Show</a>';
-                // <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-dark">SHOW</a>
-            })
-            ->rawColumns(['image','description','actions'])
-            ->make(true);
+    //         ->addColumn('actions', function($row) use($role) {
+    //             if ($role === 'admin') {
+    //                 return '<a href="' . route('products.show', $row->id) . '" class="btn btn-sm btn-secondary">Show</a>
+    //                 <a href="' . route('products.edit', $row->id) . '" class="btn btn-success btn-sm">Edit</a>
+    //                 <form action="' . route('products.destroy', $row->id) . '" method="POST" style="display:inline;">
+    //                     ' . csrf_field() . method_field('DELETE') . '
+    //                     <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $row->id .'">Delete</button>
+    //                 </form>';
+    //             }
+    //             return '<a href="' . route('products.show', $row->id) . '" class="btn btn-sm btn-dark">Show</a>';
+    //             // <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-dark">SHOW</a>
+    //         })
+    //         ->rawColumns(['image','description','actions'])
+    //         ->make(true);
+    // }
+
+    // public function getProductsData(Request $request)
+    // {
+    //     // Tentukan jumlah data per halaman sesuai dengan permintaan
+    //     $length = $request->input('length', 10); // Default 10 data per halaman
+    //     $start = $request->input('start', 0); // Dari data mana memulai
+    //     $page = ($start / $length) + 1; // Tentukan halaman berdasarkan start dan length
+    
+    //     // Ambil data produk dengan pagination
+    //     $products = Product::select('id', 'title', 'price', 'stock', 'file', 'image')
+    //         ->paginate($length, ['*'], 'page', $page);
+    
+    //     // Dapatkan role pengguna yang sedang login
+    //     $role = Auth::guard('api')->user()->role;
+    
+    //     // Kirimkan respons JSON yang sesuai dengan struktur DataTables
+    //     return response()->json([
+    //         'draw' => $request->input('draw'),
+    //         'recordsTotal' => $products->total(),
+    //         'recordsFiltered' => $products->total(),
+    //         'data' => $products->map(function($product) use($role) {
+    //             return [
+    //                 'image' => '<img src="' . asset('/storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
+    //                 'title' => $product->title,
+    //                 'price' => 'Rp. ' . number_format($product->price, 2, ',', '.'),
+    //                 'stock' => $product->stock,
+    //                 'file' => $product->file, // Menampilkan nama file tanpa tautan
+    //                 'actions' => $this->getActionButtons($product, $role)
+    //             ];
+    //         }),
+    //     ]);
+    // }
+    
+
+    //     // Method untuk menampilkan tombol sesuai dengan role
+    //     private function getActionButtons($product, $role)
+    //     {
+    //         if ($role === 'admin') {
+    //             return '
+    //                 <a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-secondary">Show</a>
+    //                 <a href="' . route('products.edit', $product->id) . '" class="btn btn-success btn-sm">Edit</a>
+    //                 <form action="' . route('products.destroy', $product->id) . '" method="POST" style="display:inline;">
+    //                     ' . csrf_field() . method_field('DELETE') . '
+    //                     <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $product->id .'">Delete</button>
+    //                 </form>';
+    //         }
+    
+    //         return '<a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-dark">Show</a>';
+    //     }
+
+    // public function getProductsData(Request $request)
+    // {
+    //     // Tentukan jumlah data per halaman sesuai dengan permintaan
+    //     $length = $request->input('length', 5); // Default 5 data per halaman
+    //     $start = $request->input('start', 0); // Dari data mana memulai
+    //     $page = ($start / $length) + 1; // Tentukan halaman berdasarkan start dan length
+
+    //     // Ambil data produk dengan pagination
+    //     $products = Product::select('id', 'title', 'price', 'stock', 'file', 'image')
+    //         ->paginate($length, ['*'], 'page', $page);
+
+    //     // Dapatkan role pengguna yang sedang login
+    //     $role = Auth::guard('api')->user()->role;
+
+    //     // Kirimkan respons JSON yang sesuai dengan struktur untuk manual pagination
+    //     return response()->json([
+    //         'total' => $products->total(), // Total records in the database
+    //         'current_page' => $products->currentPage(), // Current page number
+    //         'last_page' => $products->lastPage(), // Total number of pages
+    //         'data' => $products->map(function ($product) use ($role) {
+    //             return [
+    //                 'image' => '<img src="' . asset('/storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
+    //                 'title' => $product->title,
+    //                 'price' => 'Rp. ' . number_format($product->price, 2, ',', '.'),
+    //                 'stock' => $product->stock,
+    //                 'file' => $product->file, // Menampilkan nama file tanpa tautan
+    //                 'actions' => $this->getActionButtons($product, $role)
+    //             ];
+    //         }),
+    //     ]);
+    // }
+
+    // // Method untuk menampilkan tombol sesuai dengan role
+    // private function getActionButtons($product, $role)
+    // {
+    //     if ($role === 'admin') {
+    //         return '
+    //             <a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-secondary">Show</a>
+    //             <a href="' . route('products.edit', $product->id) . '" class="btn btn-success btn-sm">Edit</a>
+    //             <form action="' . route('products.destroy', $product->id) . '" method="POST" style="display:inline;">
+    //                 ' . csrf_field() . method_field('DELETE') . '
+    //                 <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $product->id .'">Delete</button>
+    //             </form>';
+    //     }
+
+    //     return '<a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-dark">Show</a>';
+    // }
+
+    public function getProductsData(Request $request)
+    {
+        // Ambil jumlah data per halaman dari request
+        $length = $request->input('length', 5); // Default 5 data per halaman
+        $start = $request->input('start', 0); // Mulai dari data ke berapa
+        $page = ($start / $length) + 1; // Tentukan halaman berdasarkan start dan length
+
+        // Ambil data produk dengan pagination
+        $products = Product::select('id', 'title', 'price', 'stock', 'file', 'image')
+            ->paginate($length, ['*'], 'page', $page);
+
+        // Dapatkan role pengguna yang sedang login
+        $role = Auth::guard('api')->user()->role;
+
+        // Kirimkan respons JSON sesuai dengan struktur untuk pagination manual
+        return response()->json([
+            'total' => $products->total(), // Total data di database
+            'current_page' => $products->currentPage(), // Halaman saat ini
+            'last_page' => $products->lastPage(), // Total halaman
+            'data' => $products->map(function ($product) use ($role) {
+                return [
+                    'image' => '<img src="' . asset('/storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
+                    'title' => $product->title,
+                    'price' => 'Rp. ' . number_format($product->price, 2, ',', '.'),
+                    'stock' => $product->stock,
+                    'file' => $product->file, // Menampilkan nama file tanpa tautan
+                    'actions' => $this->getActionButtons($product, $role)
+                ];
+            }),
+        ]);
     }
+
+    // Method untuk menampilkan tombol sesuai role
+    private function getActionButtons($product, $role)
+    {
+        if ($role === 'admin') {
+            return '
+                <a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-secondary">Show</a>
+                <a href="' . route('products.edit', $product->id) . '" class="btn btn-success btn-sm">Edit</a>
+                <form action="' . route('products.destroy', $product->id) . '" method="POST" style="display:inline;">
+                    ' . csrf_field() . method_field('DELETE') . '
+                    <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $product->id .'">Delete</button>
+                </form>';
+        }
+
+        return '<a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-dark">Show</a>';
+    }
+
+
 
     // public function store(Request $request)
     // {

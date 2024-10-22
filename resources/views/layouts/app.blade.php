@@ -22,6 +22,7 @@
 
     <!-- Custom styles for this page -->
     <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
 
 </head>
 
