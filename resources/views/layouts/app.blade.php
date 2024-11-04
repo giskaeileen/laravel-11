@@ -26,6 +26,8 @@
 
 </head>
 
+
+
 <body id="page-top">
     <div id="wrapper">
 
@@ -57,6 +59,8 @@
 
     <!-- Page level custom scripts -->
     <script src="{{ asset('js/demo/datatables-demo.js') }}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
 
@@ -120,8 +124,6 @@
                 // console.error('Token refresh failed:', error);
             }
         }
-
-
 
         function checkLogin() {
             const token = localStorage.getItem('token');

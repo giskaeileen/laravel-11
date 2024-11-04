@@ -176,52 +176,191 @@ class ProductController extends Controller
     //     return '<a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-dark">Show</a>';
     // }
 
+    // public function getProductsData(Request $request)
+    // {
+    //     // Ambil jumlah data per halaman dari request
+    //     $length = $request->input('length', 5); // Default 5 data per halaman
+    //     $start = $request->input('start', 0); // Mulai dari data ke berapa
+    //     $page = ($start / $length) + 1; // Tentukan halaman berdasarkan start dan length
+
+    //     // Ambil data produk dengan pagination
+    //     $products = Product::select('id', 'title', 'price', 'stock', 'file', 'image')
+    //         ->paginate($length, ['*'], 'page', $page);
+
+    //     // Dapatkan role pengguna yang sedang login
+    //     $role = Auth::guard('api')->user()->role;
+
+    //     // Kirimkan respons JSON sesuai dengan struktur untuk pagination manual
+    //     return response()->json([
+    //         'total' => $products->total(), // Total data di database
+    //         'current_page' => $products->currentPage(), // Halaman saat ini
+    //         'last_page' => $products->lastPage(), // Total halaman
+    //         'data' => $products->map(function ($product) use ($role) {
+    //             return [
+    //                 'image' => '<img src="' . asset('/storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
+    //                 'title' => $product->title,
+    //                 'price' => 'Rp. ' . number_format($product->price, 2, ',', '.'),
+    //                 'stock' => $product->stock,
+    //                 'file' => $product->file, // Menampilkan nama file tanpa tautan
+    //                 'actions' => $this->getActionButtons($product, $role)
+    //             ];
+    //         }),
+    //     ]);
+    // }
+
+    // public function getProductsData(Request $request)
+    // {
+    //     // Ambil jumlah data per halaman dari request
+    //     $length = $request->input('length', 5); // Default 5 data per halaman
+    //     $start = $request->input('start', 0); // Mulai dari data ke berapa
+    //     $page = ($start / $length) + 1; // Tentukan halaman berdasarkan start dan length
+
+    //     // Ambil parameter untuk order by
+    //     $orderByColumn = $request->input('order_by', 'id'); // Default column to order by
+    //     $orderByDirection = $request->input('order_direction', 'asc'); // Default direction
+
+    //     // Validasi kolom dan arah pengurutan
+    //     $allowedColumns = ['id', 'title', 'price', 'stock']; // Add any other columns you want to allow for ordering
+    //     if (!in_array($orderByColumn, $allowedColumns)) {
+    //         $orderByColumn = 'id'; // Fallback to default column
+    //     }
+    //     if (!in_array(strtolower($orderByDirection), ['asc', 'desc'])) {
+    //         $orderByDirection = 'asc'; // Fallback to default direction
+    //     }
+
+    //     // Ambil data produk dengan pagination dan order by
+    //     $products = Product::select('id', 'title', 'price', 'stock', 'file', 'image')
+    //         ->orderBy($orderByColumn, $orderByDirection)
+    //         ->paginate($length, ['*'], 'page', $page);
+
+    //     // Dapatkan role pengguna yang sedang login
+    //     $role = Auth::guard('api')->user()->role;
+
+    //     // Kirimkan respons JSON sesuai dengan struktur untuk pagination manual
+    //     return response()->json([
+    //         'total' => $products->total(), // Total data di database
+    //         'current_page' => $products->currentPage(), // Halaman saat ini
+    //         'last_page' => $products->lastPage(), // Total halaman
+    //         'data' => $products->map(function ($product) use ($role) {
+    //             return [
+    //                 'image' => '<img src="' . asset('/storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
+    //                 'title' => $product->title,
+    //                 'price' => 'Rp. ' . number_format($product->price, 2, ',', '.'),
+    //                 'stock' => $product->stock,
+    //                 'file' => $product->file, // Menampilkan nama file tanpa tautan
+    //                 'actions' => $this->getActionButtons($product, $role)
+    //             ];
+    //         }),
+    //     ]);
+    // }
+
+    // public function getProductsData(Request $request)
+    // {
+    //     $length = $request->input('length', 5);
+    //     $start = $request->input('start', 0);
+    //     $page = ($start / $length) + 1;
+
+    //     $orderByColumn = $request->input('order_by', 'id');
+    //     $orderByDirection = $request->input('order_direction', 'asc');
+
+    //     $allowedColumns = ['id', 'title', 'price', 'stock'];
+    //     if (!in_array($orderByColumn, $allowedColumns)) {
+    //         $orderByColumn = 'id';
+    //     }
+    //     if (!in_array(strtolower($orderByDirection), ['asc', 'desc'])) {
+    //         $orderByDirection = 'asc';
+    //     }
+
+    //     $query = Product::select('id', 'title', 'price', 'stock', 'file', 'image')
+    //         ->orderBy($orderByColumn, $orderByDirection);
+
+    //     if ($request->filled('search')) {
+    //         $query->where('title', 'like', '%' . $request->input('search') . '%');
+    //     }
+
+    //     $products = $query->paginate($length, ['*'], 'page', $page);
+    //     $role = Auth::guard('api')->user()->role;
+
+    //     return response()->json([
+    //         'total' => $products->total(),
+    //         'current_page' => $products->currentPage(),
+    //         'last_page' => $products->lastPage(),
+    //         'data' => $products->map(function ($product) use ($role) {
+    //             return [
+    //                 'image' => '<img src="' . asset('/storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
+    //                 'title' => $product->title,
+    //                 'price' => 'Rp. ' . number_format($product->price, 2, ',', '.'),
+    //                 'stock' => $product->stock,
+    //                 'file' => $product->file,
+    //                 'actions' => $this->getActionButtons($product, $role)
+    //             ];
+    //         }),
+    //     ]);
+    // }
+
     public function getProductsData(Request $request)
     {
-        // Ambil jumlah data per halaman dari request
-        $length = $request->input('length', 5); // Default 5 data per halaman
-        $start = $request->input('start', 0); // Mulai dari data ke berapa
-        $page = ($start / $length) + 1; // Tentukan halaman berdasarkan start dan length
+        $perPage = $request->input('per_page', 10);
+        $sortBy = $request->input('sort_by', 'id');
+        $sortDirection = $request->input('sort_direction', 'asc');
+        $search = $request->input('search');
 
-        // Ambil data produk dengan pagination
-        $products = Product::select('id', 'title', 'price', 'stock', 'file', 'image')
-            ->paginate($length, ['*'], 'page', $page);
+        
+        $products = Product::where('title', 'like', '%' . $search . '%')->orderBy($sortBy, $sortDirection)->paginate($perPage);
 
-        // Dapatkan role pengguna yang sedang login
         $role = Auth::guard('api')->user()->role;
 
-        // Kirimkan respons JSON sesuai dengan struktur untuk pagination manual
         return response()->json([
-            'total' => $products->total(), // Total data di database
-            'current_page' => $products->currentPage(), // Halaman saat ini
-            'last_page' => $products->lastPage(), // Total halaman
             'data' => $products->map(function ($product) use ($role) {
                 return [
-                    'image' => '<img src="' . asset('/storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
-                    'title' => $product->title,
-                    'price' => 'Rp. ' . number_format($product->price, 2, ',', '.'),
-                    'stock' => $product->stock,
-                    'file' => $product->file, // Menampilkan nama file tanpa tautan
-                    'actions' => $this->getActionButtons($product, $role)
+                    'id'            => $product->id,
+                    'image'        => '<img src="' . asset('storage/products/' . $product->image) . '" style="width: 100px; height: auto;">',
+                    'title'         => $product->title,
+                    'price'         => 'Rp. ' . number_format($product->price, 2, ',', '.'),
+                    'stock'         => $product->stock,
+                    'file'          => $product->file,
+                    'actions'       => $this->getActionButtons($product, $role)
                 ];
             }),
-        ]);
+            'pagination' => [
+                'total'         => $products->total(),
+                'per_page'      => $products->perPage(),
+                'current_page'  => $products->currentPage(),
+                'last_page'     => $products->lastPage(),
+                'next_page_url' => $products->nextPageUrl(),
+                'prev_page_url' => $products->previousPageUrl(),
+            ]
+        ], 200);
     }
 
+
+
     // Method untuk menampilkan tombol sesuai role
-    private function getActionButtons($product, $role)
-    {
+    // private function getActionButtons($product, $role)
+    // {
+    //     if ($role === 'admin') {
+    //         return '
+    //             <a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-secondary">Show</a>
+    //             <a href="' . route('products.edit', $product->id) . '" class="btn btn-success btn-sm">Edit</a>
+    //             <form action="' . route('products.destroy', $product->id) . '" method="POST" style="display:inline;">
+    //                 ' . csrf_field() . method_field('DELETE') . '
+    //                 <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $product->id .'">Delete</button>
+    //             </form>';
+    //     }
+
+    //     return '<a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-dark">Show</a>';
+    // }
+
+    private function getActionButtons($product, $role) {
         if ($role === 'admin') {
             return '
-                <a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-secondary">Show</a>
-                <a href="' . route('products.edit', $product->id) . '" class="btn btn-success btn-sm">Edit</a>
-                <form action="' . route('products.destroy', $product->id) . '" method="POST" style="display:inline;">
-                    ' . csrf_field() . method_field('DELETE') . '
-                    <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $product->id .'">Delete</button>
-                </form>';
+                <a href="'. route('products.show', $product->id) .'" class="btn btn-sm btn-secondary">Show</a>
+                <a href="'. route('products.edit', $product->id) .'" class="btn btn-success btn-sm">Edit</a>
+                <button type="submit" class="btn btn-danger btn-sm delete-product" data-id="' . $product->id .'">Delete</button>
+            ';
         }
 
-        return '<a href="' . route('products.show', $product->id) . '" class="btn btn-sm btn-dark">Show</a>';
+        return '<a href="'. route('products.show', $product->id) .'" class="btn btn-sm btn-dark">Show</a>';
     }
 
 
@@ -319,6 +458,51 @@ class ProductController extends Controller
     //     }
     // }
 
+    // public function store(Request $request)
+    // {
+    //     Log::info('Updating product', $request->all());
+
+    //     $request->validate([
+    //         'image'        => 'required|image|mimes:jpeg,jpg,png|max:2048',
+    //         'title'         => 'required|min:5',
+    //         'description'   => 'required|min:10',
+    //         'price'         => 'required|numeric',
+    //         'stock'         => 'required|numeric',
+    //         'file'          => 'required|mimes:pdf,doc,docx|max:5120',
+    //     ]);
+    //     try {
+
+    //         $image = $request->file('image');
+    //         $image->storeAs('public/products', $image->hashName());
+
+    //         $file = $request->file('file');
+    //         $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension(); // UUID dengan ekstensi file
+    //         $file->storeAs('public/products/documents', $fileName);
+
+    //         $product = Product::create([
+    //             'image'            => $image->hashName(),
+    //             'title'             => $request->title,
+    //             'description'       => $request->description,
+    //             'price'             => $request->price,
+    //             'stock'             => $request->stock,
+    //             'file'              => $fileName,
+    //         ]);
+
+    //         return response()->json([
+    //             'message' => 'Data Berhasil Disimpan!',
+    //             'data' => $product,
+    //         ], 201); // HTTP status 201 Created
+
+    //     } catch (\Exception $e) {
+    //         Log::error('Error storing product: '.$e->getMessage()); // Log detail kesalahan
+        
+    //         return response()->json([
+    //             'message' => 'Data Gagal Disimpan!',
+    //             'error' => $e->getMessage(), // Menambahkan detail kesalahan
+    //         ], 500);
+    //     }
+    // }
+
     public function store(Request $request)
     {
         Log::info('Updating product', $request->all());
@@ -331,38 +515,54 @@ class ProductController extends Controller
             'stock'         => 'required|numeric',
             'file'          => 'required|mimes:pdf,doc,docx|max:5120',
         ]);
+
         try {
+            // Simpan produk tanpa image dan file terlebih dahulu
+            $product = Product::create([
+                'title'        => $request->title,
+                'description'  => $request->description,
+                'price'        => $request->price,
+                'stock'        => $request->stock,
+                'image'       => 'temp.jpg', // Nilai sementara untuk kolom image
+            ]);
 
+            // Menyimpan image dengan menambahkan ID produk
+            // $image = $request->file('image');
+            // $imageName = $product->id . '_' . $image->hashName();
+            // $image->storeAs('public/products', $imageName);
             $image = $request->file('image');
-            $image->storeAs('public/products', $image->hashName());
+            $imageName = $product->id . '_' . $image->hashName();
+            $image->storeAs('public/products', $imageName);
 
+            $product->update(['image' => $imageName]);
+
+
+            // Menyimpan file dengan nama yang mengandung UUID
             $file = $request->file('file');
-            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension(); // UUID dengan ekstensi file
+            $fileName = Str::uuid() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('public/products/documents', $fileName);
 
-            $product = Product::create([
-                'image'            => $image->hashName(),
-                'title'             => $request->title,
-                'description'       => $request->description,
-                'price'             => $request->price,
-                'stock'             => $request->stock,
-                'file'              => $fileName,
+            // Update produk dengan nama file image dan dokumen
+            $product->update([
+                'image' => $imageName,
+                'file'  => $fileName,
             ]);
 
             return response()->json([
                 'message' => 'Data Berhasil Disimpan!',
-                'data' => $product,
-            ], 201); // HTTP status 201 Created
+                'data'    => $product,
+            ], 201);
 
         } catch (\Exception $e) {
-            Log::error('Error storing product: '.$e->getMessage()); // Log detail kesalahan
-        
+            Log::error('Error storing product: ' . $e->getMessage());
+
             return response()->json([
                 'message' => 'Data Gagal Disimpan!',
-                'error' => $e->getMessage(), // Menambahkan detail kesalahan
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
+
 
 
     // public function store(Request $request)
@@ -477,20 +677,31 @@ class ProductController extends Controller
             'description'   => 'required|min:10',
             'price'         => 'required|numeric',
             'stock'         => 'required|numeric',
-            'file'          => 'mimes:pdf|mimes:pdf,doc,docx|max:5120',
+            'file'          => 'mimes:pdf,doc,docx|max:5120',
         ]);
 
         $product = Product::findOrFail($id);
 
+        // if ($request->file('image')) {
+        //     // delete
+        //     Storage::delete('public/products/'.$product->image);
+
+        //     $image = $request->file('image');
+        //     $image->storeAs('/public/products', $image->hashName());
+
+        //     $product->image = $image->hashName();
+
+        // }
+
         if ($request->file('image')) {
-            // delete
-            Storage::delete('public/products/'.$product->image);
-
+            // Hapus gambar lama
+            Storage::delete('public/products/' . $product->image);
+        
             $image = $request->file('image');
-            $image->storeAs('/public/products', $image->hashName());
-
-            $product->image = $image->hashName();
-
+            $imageName = $product->id . '_' . $image->hashName(); // Menambahkan ID produk pada nama file
+            $image->storeAs('public/products', $imageName);
+        
+            $product->image = $imageName;
         }
 
         if ($request->file('file')) {

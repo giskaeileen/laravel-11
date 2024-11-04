@@ -86,7 +86,7 @@
 
 @push('scripts')
 
-    <script>
+    <!-- <script>
         CKEDITOR.replace( 'description' );
 
         // async function submitForm(event) {
@@ -148,55 +148,131 @@
         //     }
         // }
 
-    async function submitForm(event) {
-        event.preventDefault();
+        async function submitForm(event) {
+            event.preventDefault();
 
-        const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token');
 
-        const image = document.getElementById('image').files[0];
-        const title = document.getElementById('title').value;
-        const description = CKEDITOR.instances['description'].getData(); 
-        const price = document.getElementById('price').value;
-        const stock = document.getElementById('stock').value;
-        const file = document.getElementById('file').files[0];
+            const image = document.getElementById('image').files[0];
+            const title = document.getElementById('title').value;
+            const description = CKEDITOR.instances['description'].getData(); 
+            const price = document.getElementById('price').value;
+            const stock = document.getElementById('stock').value;
+            const file = document.getElementById('file').files[0];
 
-        const formData = new FormData();
-        formData.append('image', image);
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('price', price);
-        formData.append('stock', stock);
-        formData.append('file', file);
+            const formData = new FormData();
+            formData.append('image', image);
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('price', price);
+            formData.append('stock', stock);
+            formData.append('file', file);
 
-        try {
-            const response = await fetch('http://127.0.0.1:8000/api/products-store-api', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
-                },
-                body: formData,
-            });
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/products-store-api', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: formData,
+                });
 
-            const data = await response.json(); // Parse JSON response
+                const data = await response.json(); // Parse JSON response
 
-            if (response.ok) { // Check if response status is in the range 200-299
-                alert('Data berhasil disimpan!'); // Alert sukses
-                window.location.href = "{{ route('products.index') }}";
-            } else {
-                alert(data.message || 'An error occurred'); // Use response message if available
-            }
+                if (response.ok) { // Check if response status is in the range 200-299
+                    alert('Data berhasil disimpan!'); // Alert sukses
+                    window.location.href = "{{ route('products.index') }}";
+                } else {
+                    alert(data.message || 'An error occurred'); // Use response message if available
+                }
 
-        } catch (error) {
-            if (error.message.includes('401')) {
-                await refreshToken();
-                submitForm(event); // Pass the event parameter to prevent default
-            } else {
-                console.error('An unexpected error occurred:', error);
+            } catch (error) {
+                if (error.message.includes('401')) {
+                    await refreshToken();
+                    submitForm(event); // Pass the event parameter to prevent default
+                } else {
+                    console.error('An unexpected error occurred:', error);
+                }
             }
         }
-    }
 
+
+        document.getElementById('createForm').addEventListener('submit', submitForm)
+
+
+    </script> -->
+
+    <script>
+        CKEDITOR.replace( 'description' );
+
+
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const token = localStorage.getItem('token');
+            // console.log(token)
+
+            const image = document.getElementById('image').files[0];
+            const title = document.getElementById('title').value;
+            const description = CKEDITOR.instances['description'].getData(); 
+            const price = document.getElementById('price').value;
+            const stock = document.getElementById('stock').value;
+            const file = document.getElementById('file').files[0];
+
+            console.log(image)
+            console.log(title)
+            console.log(description)
+            console.log(price)
+            console.log(stock)
+            console.log(file)
+
+            const formData = new FormData();
+            formData.append('image', image);
+            formData.append('title', title);
+            formData.append('description', description);
+            formData.append('price', price);
+            formData.append('stock', stock);
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/products-store-api', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: formData,
+                })
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                if (response.status === 201) {
+                    Swal.fire({
+                        title: 'Data berhasil disimpan',
+                        icon: 'success',
+                    });
+
+                    setTimeout(function() {
+                        window.location.href = "{{ route('products.index') }}"
+                    }, 2000);
+
+                } else {
+                    alert(data.message);
+                }
+
+
+            } catch (error) {
+                // if (error.message.includes('401')) {
+                // }
+                await refreshToken(401)
+                submitForm()
+                // console.error(error)
+                
+            }
+        }
 
         document.getElementById('createForm').addEventListener('submit', submitForm)
 

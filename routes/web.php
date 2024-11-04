@@ -37,6 +37,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::put('/products/{product}', [\App\Http\Controllers\ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [\App\Http\Controllers\ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/products-data', [\App\Http\Controllers\ProductController::class, 'getProductsData'])->name('products.data');
+
+    Route::get('/profile-user/{id}', [\App\Http\Controllers\UserController::class, 'index'])->name('profile-user.index');
   // });
 
 //   Route::middleware('auth', 'checkRole')->group(function () {

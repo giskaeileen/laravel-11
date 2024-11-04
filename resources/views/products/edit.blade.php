@@ -82,7 +82,7 @@
 
 @push('scripts')
 
-    <script>
+    <!-- <script>
         CKEDITOR.replace('product-description');
 
         async function getData () {
@@ -159,6 +159,100 @@
 
                 if (response.status === 200) {
                     alert('Data berhasil disimpan!'); // Alert sukses
+                    window.location.href = "{{ route ('products.index') }}"
+                } else {
+                    alert(data.message)
+                }
+            } catch (error) {
+                if (error.message.includes('401')) {
+                    await refreshToken()
+
+                    updateForm()
+                    
+                }
+            }
+        }
+
+        document.getElementById('updateForm').addEventListener('submit', updateForm)
+
+    </script> -->
+
+    <script>
+        CKEDITOR.replace( 'product-description' );
+
+        async function getData () {
+            const id = {{ request()->route('id')}}
+            const token = localStorage.getItem('token')
+            console.log(id)
+            console.log(token)
+
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/products-data-show-api/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                })
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json()
+
+                if (response.status === 200) {
+                    document.getElementById('product-title').value = data.products.title;
+                    CKEDITOR.instances['product-description'].setData(data.products.description);
+                    document.getElementById('product-price').value = data.products.price;
+                    document.getElementById('product-stock').value = data.products.stock;
+                }
+
+            } catch (error) {
+                if (error.message.includes('401')) {
+                    await refreshToken()
+
+                    getData()
+                    
+                }
+            }
+
+        }
+
+        document.addEventListener('DOMContentLoaded', getData)
+
+
+
+
+        async function updateForm (event) {
+            event.preventDefault();
+
+            CKEDITOR.instances['product-description'].updateElement();
+
+            const formData = new FormData(this)
+            // formData.forEach((value, key) => {
+            //     console.log(key, value);
+            // });
+            const id = {{ request()->route('id') }};
+            const token = localStorage.getItem('token');
+
+            console.log('Title:', formData.get('title'));
+            console.log('Description:', formData.get('description'));
+            console.log('Price:', formData.get('price'));
+            console.log('Stock:', formData.get('stock'));
+
+
+            try {
+                const response = await fetch (`http://127.0.0.1:8000/api/products-update/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    },
+                    body: formData,
+                });
+
+                if (response.status === 200) {
                     window.location.href = "{{ route ('products.index') }}"
                 } else {
                     alert(data.message)

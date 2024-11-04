@@ -29,6 +29,11 @@ Route::middleware(['checkToken'])->group(function () {
   Route::post('/products-update/{id}', [\App\Http\Controllers\Api\ProductController::class, 'update'])->name('products.update.api');
   Route::delete('/products-delete/{id}', [\App\Http\Controllers\Api\ProductController::class, 'destroy'])->name('products.destroy.api');
   Route::post('/logout-api', [\App\Http\Controllers\Api\AuthController::class, 'logout'])->name('logout.api');
+
+  Route::get('/user-api', [\App\Http\Controllers\Api\UserController::class, 'getUser'])->name('user.api');
+  Route::get('/user-data-api', [\App\Http\Controllers\Api\UserController::class, 'getUserData'])->name('user.data.api');
+  Route::post('/user-upload-photo-api', [\App\Http\Controllers\Api\UserController::class, 'uploadImage'])->name('user.uploadimage.api');
+  Route::post('/user-update-api', [\App\Http\Controllers\Api\UserController::class, 'updateUserProfile'])->name('user.update.api');
 });
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
